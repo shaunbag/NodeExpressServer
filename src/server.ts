@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-
+const authMiddleWare = require('./authMiddleWare');
 const app = express();
 const PORT = 5000;
 const html = '<h1>I am a H1 Title</h1>';
@@ -28,8 +28,13 @@ app.get('/user/:id', (req: Request, res: Response) => {
     res.send(`Hello ${name}`)
 })
 
-// initialisation of server
-app.listen(3000, () => {
-    console.log('Server Listening on port http://Localhost:3000')
+//A protected route using the authMiddleware
+app.get('/protected', authMiddleWare, (req, res) => {
+  res.json({ message: 'this route is protected', user: req.user})
 })
 
+
+// initialisation of server
+app.listen(PORT, () => {
+    console.log('Server Listening on port http://Localhost:3000')
+})
