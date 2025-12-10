@@ -12,7 +12,7 @@ const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
 
     const tokenWithoutBearer = token.split(' ')[1]
 
-    jwt.verify(tokenWithoutBearer, process.env.JWTR_SECRET, (error: VerifyErrors |null, decoded: JwtPayload | string | undefined) => {
+    jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET, (error: VerifyErrors |null, decoded: JwtPayload | string | undefined) => {
         if(error){
             return res.status(401).json({ message: 'Invalid or Expired Token'})
         }
@@ -25,4 +25,8 @@ const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-module.exports = authMiddleWare;
+const generateToken = (user: User) => {
+    return jwt.sign({id: user.id, username: user.username}, process.env.JWT_SECRET, { expiresIn: '1h' })
+}
+
+module.exports = {authMiddleWare, generateToken};

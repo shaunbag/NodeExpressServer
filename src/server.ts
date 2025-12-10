@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 const authMiddleWare = require('./authMiddleWare');
+const generateToken = require('./authMiddleware');
 const app = express();
 const PORT = 5000;
 const html = '<h1>I am a H1 Title</h1>';
@@ -33,6 +34,19 @@ app.get('/protected', authMiddleWare, (req, res) => {
   res.json({ message: 'this route is protected', user: req.user})
 })
 
+app.post('login', (req: Request, res: Response) => {
+  const {username, password} = req.body
+
+  //create the user in DB and assign id: TODO
+  const user = {
+    id: 0,
+    username: username,
+    password: password
+  }
+  
+  const token = generateToken(user)
+  res.json({ token })
+})
 
 // initialisation of server
 app.listen(PORT, () => {
