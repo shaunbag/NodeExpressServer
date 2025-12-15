@@ -1,32 +1,35 @@
-const jwt = require('jsonwebtoken')
+import jwt, { JwtPayload, VerifyErrors } from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express';
-import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
 import { User } from './types/types';
 
-const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers['authorization']
+export const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers['authorization'] as string | undefined
 
-    if(!token){
+    if(!authHeader){
         return res.status(403).json({ message: 'No Auth Token Provided'})
     }
 
-    const tokenWithoutBearer = token.split(' ')[1]
+    const parts = authHeader.split(' ')
+    const tokenWithoutBearer = parts.length === 2 ? parts[1] : parts[0]
 
-    jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET, (error: VerifyErrors |null, decoded: JwtPayload | string | undefined) => {
+    jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET as string, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
         if(error){
             return res.status(401).json({ message: 'Invalid or Expired Token'})
         }
 
         // decoded is safe to use here once you check it's an object
         if (decoded && typeof decoded === 'object') {
-            req.user = decoded // user has bee define don the Request type in /types/expres.d.ts
+            req.user = decoded // `user` augmentation is declared in `src/types/express.d.ts`
         }
         next()
     })
 }
 
-const generateToken = (user: User) => {
-    return jwt.sign({id: user.id, username: user.username}, process.env.JWT_SECRET, { expiresIn: '1h' })
+export const generateToken = (user: User) => {
+    return jwt.sign({id: user.id, username: user.username}, process.env.JWT_SECRET as string, { expiresIn: '1h' })
 }
 
-module.exports = {authMiddleWare, generateToken};
+export default {
+  authMiddleWare,
+  generateToken
+}

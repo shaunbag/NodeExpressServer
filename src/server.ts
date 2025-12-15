@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
-const authMiddleWare = require('./authMiddleWare');
-const generateToken = require('./authMiddleware');
+import { authMiddleWare, generateToken } from './authMiddleware';
 const app = express();
 const PORT = 5000;
 const html = '<h1>I am a H1 Title</h1>';
+
+app.use(express.json())
 
 // basic get returning string
 app.get('/', (req: Request, res: Response) => {
@@ -34,7 +35,7 @@ app.get('/protected', authMiddleWare, (req, res) => {
   res.json({ message: 'this route is protected', user: req.user})
 })
 
-app.post('login', (req: Request, res: Response) => {
+app.post('/login', (req: Request, res: Response) => {
   const {username, password} = req.body
 
   //create the user in DB and assign id: TODO
@@ -50,5 +51,5 @@ app.post('login', (req: Request, res: Response) => {
 
 // initialisation of server
 app.listen(PORT, () => {
-    console.log('Server Listening on port http://Localhost:3000')
+  console.log(`Server Listening on port http://localhost:${PORT}`)
 })
