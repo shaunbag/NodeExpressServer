@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 import { Request, Response, NextFunction } from 'express';
 import { JwtPayload, VerifyErrors } from 'jsonwebtoken';
-
+import { User } from './types/types';
 
 const authMiddleWare = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers['authorization']
