@@ -1,11 +1,12 @@
 import express, { Request, Response } from 'express';
 import { authMiddleWare, generateToken } from './authMiddleware';
+import cors from 'cors'
 const app = express();
 const PORT = 5000;
 const html = '<h1>I am a H1 Title</h1>';
 
 app.use(express.json())
-
+app.use(cors())
 // basic get returning string
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!')
